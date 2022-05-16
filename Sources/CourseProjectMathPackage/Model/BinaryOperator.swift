@@ -12,11 +12,10 @@ public enum BinaryOperator {
     case minus
     case multiplication
     case division
-    case percentage
     case exponentiation
     
     static func random() -> BinaryOperator {
-        switch Int.random(in: 0...6) {
+        switch Int.random(in: 0...4) {
         case 0:
             return .plus
         case 1:
@@ -26,8 +25,6 @@ public enum BinaryOperator {
         case 3:
             return division
         case 4:
-            return percentage
-        case 5:
             return exponentiation
         default:
             return .plus
