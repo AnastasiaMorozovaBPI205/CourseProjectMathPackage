@@ -8,10 +8,10 @@
 import UIKit
 
 public struct ExpressionModel {
-    public var leftNumberRange: Range<Double>
-    public var rightNumberRange: Range<Double>
+    public var leftNumberRange: Range<Int>
+    public var rightNumberRange: Range<Int>
     
-    public init(leftNumberRange: Range<Double>, rightNumberRange: Range<Double>) {
+    public init(leftNumberRange: Range<Int>, rightNumberRange: Range<Int>) {
         self.leftNumberRange = leftNumberRange
         self.rightNumberRange = rightNumberRange
     }
