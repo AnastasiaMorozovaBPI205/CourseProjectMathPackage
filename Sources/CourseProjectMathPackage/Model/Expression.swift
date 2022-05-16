@@ -12,8 +12,8 @@ public final class Expression {
     private var model: ExpressionModel?
     
     private var operator_: BinaryOperator?
-    private var leftNumber: Double = 0
-    private var rightNumber: Double = 0
+    private var leftNumber: Int = 0
+    private var rightNumber: Int = 0
     
     private var leftUnaryOperator: UnaryOperator?
     private var rightUnaryOperator: UnaryOperator?
@@ -22,7 +22,7 @@ public final class Expression {
         self.model = model
         
         randomize()
-        calculateExpression()
+        result = calculateExpression()
     }
     
     private func randomize() {
@@ -31,87 +31,85 @@ public final class Expression {
         repeat {
             operator_ = BinaryOperator.random()
             
-            rightNumber = Double.random(in: model.rightNumberRange)
-            leftNumber = Double.random(in: model.leftNumberRange)
+            rightNumber = Int.random(in: model.rightNumberRange)
+            leftNumber = Int.random(in: model.leftNumberRange)
             
             leftUnaryOperator = UnaryOperator.random()
             rightUnaryOperator = UnaryOperator.random()
         } while (
             operator_ == .division && rightNumber == 0
-                || leftUnaryOperator == .sqrt && leftNumber < 0
-                || rightUnaryOperator == .sqrt && rightNumber < 0
-                || leftUnaryOperator == .log && leftNumber <= 0
-                || rightUnaryOperator == .log && rightNumber <= 0
-                || leftUnaryOperator == .factorial && leftNumber >= 13
-                || rightUnaryOperator == .factorial && rightNumber >= 13
+                || checkNumber(number: leftNumber, operator_: leftUnaryOperator)
+                || checkNumber(number: rightNumber, operator_: rightUnaryOperator)
+                || floor(calculateExpression()) != calculateExpression()
+                || calculateExpression() > Double(Int.max)
         )
     }
     
-    private func calculateExpression() {
-        guard let leftUnaryOperator = leftUnaryOperator else { return }
-        guard let rightUnaryOperator = rightUnaryOperator else { return }
+    private func checkNumber(number: Int, operator_: UnaryOperator?) -> Bool {
+        return operator_ == .sqrt && (number < 0 || floor(sqrt(Double(number))) != sqrt(Double(number)))
+            || operator_ == .factorial && number >= 13
+            || operator_ == .cos && (floor(cos(Double(number))) != cos(Double(number)))
+            || operator_ == .sin && (floor(sin(Double(number))) != sin(Double(number)))
+            || operator_ == .tan && (floor(tan(Double(number))) != tan(Double(number)))
+    }
+    
+    private func calculateExpression() -> Double {
+        guard let leftUnaryOperator = leftUnaryOperator else { return 0 }
+        guard let rightUnaryOperator = rightUnaryOperator else { return 0 }
         
         let leftPart = calculateUnaryExpression(operator_: leftUnaryOperator, number: leftNumber)
         let rightPart = calculateUnaryExpression(operator_: rightUnaryOperator, number: rightNumber)
         
         switch operator_ {
         case .plus:
-            result = leftPart + rightPart
+            return leftPart + rightPart
         case .minus:
-            result = leftPart - rightPart
+            return leftPart - rightPart
         case .multiplication:
-            result = leftPart * rightPart
+            return leftPart * rightPart
         case .division:
-            result = leftPart / rightPart
-        case .percentage:
-            result = leftPart.truncatingRemainder(dividingBy: rightNumber)
+            return leftPart / rightPart
         case .exponentiation:
-            result = pow(leftPart, rightPart)
+            return pow(leftPart, rightPart)
         case .none:
-            result = 0
+            return 0
         }
     }
     
-    private func calculateUnaryExpression(operator_: UnaryOperator, number: Double) -> Double {
+    private func calculateUnaryExpression(operator_: UnaryOperator, number: Int) -> Double {
         switch operator_ {
         case .sqrt:
-            return sqrt(number)
-        case .abs:
-            return abs(number)
-        case .log:
-            return log(number)
+            return sqrt(Double(number))
         case .sin:
-            return sin(number)
+            return sin(Double(number))
         case .cos:
-            return cos(number)
+            return cos(Double(number))
         case .tan:
-            return tan(number)
+            return tan(Double(number))
         case .factorial:
             return Double(calculateFactorial(number: number))
         case .none:
-            return number
+            return Double(number)
         }
     }
     
-    private func calculateFactorial(number: Double) -> Int {
-        let value = Int(round(number))
+    private func calculateFactorial(number: Int) -> Int {
+        if (number == 0) {
+            return 0
+        }
         
         var product = 1
-        for _ in 1...value {
-            product *= value
+        for _ in 1...number {
+            product *= number
         }
         
         return product
     }
     
-    private func getUnaryExpression(operator_: UnaryOperator, number: Double) -> String {
+    private func getUnaryExpression(operator_: UnaryOperator, number: Int) -> String {
         switch operator_ {
         case .sqrt:
             return "sqrt(\(number))"
-        case .abs:
-            return "abs(\(number))"
-        case .log:
-            return "log(\(number))"
         case .sin:
             return "sin(\(number))"
         case .cos:
@@ -135,8 +133,6 @@ public final class Expression {
             return " * "
         case .division:
             return " / "
-        case .percentage:
-            return " % "
         case .exponentiation:
             return " ^ "
         case .none:
@@ -150,16 +146,16 @@ public final class Expression {
         
         return getUnaryExpression(
             operator_: leftUnaryOperator,
-            number: round(1000 * leftNumber) / 1000
+            number: leftNumber
         )
         + getBinaryOperator()
         + getUnaryExpression(
             operator_: rightUnaryOperator,
-            number: round(1000 * rightNumber) / 1000
+            number: rightNumber
         )
     }
     
-    public func getResult() -> Double {
-        return result
+    public func getResult() -> Int {
+        return Int(result)
     }
 }
