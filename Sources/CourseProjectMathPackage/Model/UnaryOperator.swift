@@ -9,8 +9,6 @@ import UIKit
 
 public enum UnaryOperator {
     case sqrt
-    case abs
-    case log
     case sin
     case cos
     case tan
@@ -18,22 +16,18 @@ public enum UnaryOperator {
     case none
     
     static func random() -> UnaryOperator {
-        switch Int.random(in: 0...8) {
+        switch Int.random(in: 0...5) {
         case 0:
             return .sqrt
         case 1:
-            return .abs
-        case 2:
-            return .log
-        case 3:
             return .sin
-        case 4:
+        case 2:
             return .cos
-        case 5:
+        case 3:
             return .tan
-        case 6:
+        case 4:
             return .factorial
-        case 7:
+        case 5:
             return .none
         default:
             return .none
